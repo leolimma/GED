@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title><ui:insert name="titulo">Gerenciador Eletrônico de Documentos</ui:insert></title>
+
+        <h:outputStylesheet library="css" name="bootstrap.min.css" />
+        <h:outputStylesheet library="css" name="bootstrap-theme.min.css" />
+        <h:outputStylesheet library="css" name="style.css" />
+        <style type="text/css"> 
+            #logotipo{
+                text-align: center;
+                /*float: right;*/	
+            } 
+        </style>
+    </h:head>    
+    <h:body> 
+        <div id="container">
+
+            <div id="titulo">
+                <ui:insert name="titulo">Página Interna do Sistema</ui:insert>
+            </div>
+
+            <div id="logotipo">
+                <h:graphicImage library="imagens" name="testelogo.png" />
+            </div>
+
+            <div id="usuario_informacoes">
+                <ui:insert name="usuario_informacoes" >
+                    <p:panelGrid>
+                        <h:form>
+                            <span style="vertical-align: text-top;">
+                                <h:commandLink value="#{contextoController.usuarioLogado.nome}" 
+                                               action="/meus_dados?faces-redirect=true" style="color: #fff;"/>
+                            </span>
+
+                            <p:commandLink onclick="document.location = '#{request.contextPath}/j_spring_security_logout'" >
+                                <div id="sair">
+                                    <p:graphicImage library="imagens" name="sair.png" />                                    
+                                    <span style="vertical-align: middle;">Sair</span>
+                                </div>
+                            </p:commandLink>
+                        </h:form>
+                    </p:panelGrid>
+                </ui:insert>
+            </div>
+
+            <div id="barra_menu">
+                <ui:insert name="barra_menu">
+                    <ui:include src="/restrito/menu_sistema.xhtml" />
+                </ui:insert>
+            </div>
+
+            <div id="corpo">
+                <ui:insert name="corpo" />
+            </div>
+
+            <div id="carregando">
+                <p:ajaxStatus>
+                    <f:facet name="start">
+                        <h:graphicImage library="imagens" name="loader.gif" />
+                    </f:facet>
+                </p:ajaxStatus>
+            </div>
+            
+            <div id="rodape">
+                <ui:insert name="rodape">
+                    <ui:include src="/publico/rodape.xhtml" />
+                </ui:insert>
+            </div>
+
+        </div>        
+    </h:body>
+</html>

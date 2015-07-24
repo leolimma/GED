@@ -1,0 +1,88 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package br.com.goku.util;
+
+import br.com.goku.controller.DocumentoController;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
+
+/**
+ *
+ * @author ronaldo
+ */
+public class FileUpload {
+
+    /**
+     * Busca o diretório raiz da aplicação
+     *
+     * @return String com o caminho
+     */
+    public String getRealPath() {
+        System.out.println("getRealPath...");
+        String path;
+        ServletContext context = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+        path = context.getRealPath("/arquivos");
+        path += "/";
+        System.out.println("path: " + path);
+        return path;
+    }
+
+    /**
+     * Este cria um arquivo PDF e escreve um objeto inputstream nele, depois
+     * Salva o arquivo no caminho especificado.
+     *
+     * @param nomePasta é o nome da pasta onde será salvo o arquivo
+     * @param nomeArquivo nome do arquivo com a extensão
+     * @param arquivo Objeto do tipo InputStream com o conteúdo do arquivo.
+     * @return Retorna true se a operação deu certo e false se falhou.
+     */
+    public boolean salvarArquivo(String nomeArquivo, InputStream arquivo) {
+        System.out.println("Salvando Arquivo...");
+
+        /*if (!nomePasta.endsWith("/")) {
+         nomePasta += "/";
+         }
+         String caminho = getRealPath() + nomePasta;*/
+        String caminho = getRealPath();
+        File folder = new File(caminho);
+        /*if (!folder.exists()) {
+         folder.mkdir();
+         }*/
+
+        File pdf = new File(folder, nomeArquivo);
+
+        if (!pdf.exists()) {
+            try {
+                OutputStream outputStream = new FileOutputStream(pdf);
+
+                int read = 0;
+                byte[] bytes = new byte[1024];
+
+                while ((read = arquivo.read(bytes)) != -1) {
+                    outputStream.write(bytes, 0, read);
+                }
+
+                System.out.println("Fim.");
+                return true;
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(DocumentoController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(DocumentoController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            Logger.getLogger(DocumentoController.class.getName()).log(Level.SEVERE, "Arquivo já existe", new Exception());
+        }
+        return false;
+    }
+}

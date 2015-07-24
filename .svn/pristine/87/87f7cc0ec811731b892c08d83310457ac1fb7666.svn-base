@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:composition template="/templates/interna.xhtml">
+
+        <ui:define name="titulo">
+            Usuários
+        </ui:define>
+
+        <ui:define name="corpo">
+            <p:messages autoUpdate="true"  id="msgPrincipal" closable="true" for="usuario_listagem"/>
+
+            <h:form id="usuario_listagem">
+                <p:commandButton value="#{info.btNovoUsuario}" type="button" icon="ui-icon-plus" onclick="PF('dlg1').show();"
+                                 styleClass="btNovo"/>
+
+                <p:dialog id="dlgGrupos" header="Grupos" widgetVar="grp" modal="true" resizable="false" appendTo="@(body)">
+                    <h:outputText value="O usuário #{usuarioController.usuario.nome} está no(s) seguinte(s) grupo(s): " /> 
+                    <p:dataList id="lstGrupo" value="#{usuarioController.usuario.grupos}" var="grupo"
+                                type="ordered" emptyMessage="#{info.msgListaVazia}" >                       
+                        #{grupo.descricao}
+                    </p:dataList>
+                </p:dialog>           
+
+                <p:dataTable value="#{usuarioController.lista}" var="usuario" emptyMessage="#{info.msgListaVazia}" 
+                             widgetVar="usuarioTable" filteredValue="#{usuarioController.listaFiltro}"
+                             rows="5" rowsPerPageTemplate="5,10,15" paginator="true" id="lstUsuarios"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             paginatorPosition="top">  
+                    <p:column headerText="Ativo" style="text-align: center"> 
+                        <p:commandLink action="#{usuarioController.ativar()}" update=":usuario_listagem">
+                            <p:graphicImage library="imagens" name="usuario_ativo_#{usuario.ativo}.png" />
+                            <f:setPropertyActionListener target="#{usuarioController.usuario}" value="#{usuario}"  />                            
+                        </p:commandLink>
+                    </p:column>     
+
+                    <p:column headerText="Grupos" style="text-align: center">
+                        <p:commandLink update=":usuario_listagem:dlgGrupos" oncomplete="PF('grp').show();" >
+                            <p:graphicImage library="imagens" name="pesquisar.png" style="border:0" />
+                            <f:setPropertyActionListener target="#{usuarioController.usuario}" value="#{usuario}" />
+                        </p:commandLink>
+                    </p:column>                    
+
+                    <p:column headerText="Nome" filterBy="#{usuario.nome}"  filterMatchMode="contains">
+                        <h:outputText value="#{usuario.nome}" />
+                    </p:column>
+
+                    <p:column headerText="CPF" filterBy="#{usuario.cpf}" filterMatchMode="contains">
+                        <h:outputText value="#{usuario.cpf}" />
+                    </p:column>
+
+                    <p:column headerText="Telefone" filterBy="#{usuario.telefone}"  filterMatchMode="contains">
+                        <h:outputText value="#{usuario.telefone}" />
+                    </p:column>
+
+                    <p:column headerText="Email" filterBy="#{usuario.email}"  filterMatchMode="contains">
+                        <h:outputText value="#{usuario.email}" />
+                    </p:column>                   
+
+                    <p:column headerText="Login" filterBy="#{usuario.login}"  filterMatchMode="contains">
+                        <h:outputText value="#{usuario.login}" />
+                    </p:column>
+                    <p:column headerText="Administrador" style="text-align: center">
+                        <p:commandLink action="#{usuarioController.atribuiPermissao()}" update=":usuario_listagem">
+                            <p:graphicImage library="imagens" name="ROLE_ADMINISTRADOR_#{usuario.permissao.contains('ROLE_ADMINISTRADOR')}.png" />					
+                            <f:setPropertyActionListener target="#{usuarioController.usuario}" value="#{usuario}" />
+                            <p:confirm header="Confirmação" message="Confirma a alteração de acesso Administrador do usuário #{usuarioController.usuario.nome}?" icon="ui-icon-alert"/>                            
+                        </p:commandLink>
+                    </p:column>
+                    <p:column headerText="Editar" style="text-align: center">
+                        <p:commandLink oncomplete="PF('dlg1').show();" update=":cadastro">
+                            <h:graphicImage library="imagens" name="editar.png" style="border:0" />
+                            <f:setPropertyActionListener value="#{usuario}" target="#{usuarioController.usuario}" />
+                        </p:commandLink>
+                    </p:column>
+                    <p:column headerText="Excluir" style="text-align: center">
+                        <p:commandLink action="#{usuarioController.excluirUsuario()}" update="@form" >
+                            <h:graphicImage library="imagens" name="excluir.png" style="border:0" />
+                            <f:setPropertyActionListener value="#{usuario}" target="#{usuarioController.usuario}" />
+                            <p:confirm header="Confirmação" message="Confirma a exclusão do usuário #{usuarioController.usuario.nome}?" icon="ui-icon-alert" />
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+
+            <p:dialog header="#{info.dlgUsuarioHeader}" widgetVar="dlg1" id="novoUsuarioDlg" resizable="false"
+                      modal="true" closable="false" appendTo="@(body)">   
+                <h:form id="cadastro">
+                    <h:panelGrid id="grdNovoUsuario" columns="3">
+                        <p:outputLabel for="nome" value="Nome: " />
+                        <p:inputText id="nome" label="Nome: " required="true" requiredMessage="O campo Nome é obrigatório"
+                                     size="30" value="#{usuarioController.usuario.nome}"/>
+                        <p:message for="nome" display="text" />
+                        
+                        <p:outputLabel for="cpf" value="CPF: " />
+                        <p:inputMask id="cpf" mask="999.999.999-99" label="CPF: " required="true" requiredMessage="O campo CPF é obrigatório"
+                                     size="30" value="#{usuarioController.usuario.cpf}"/>
+                        <p:message for="cpf" display="text" />
+                        
+                        <p:outputLabel for="telefone" value="Telefone: "/>
+                        <p:inputMask id="telefone" mask="(99) 9999-9999" label="Telefone: " required="true" requiredMessage="O campo Telefone é obrigatório"
+                                     size="30" value="#{usuarioController.usuario.telefone}"/>
+                        <p:message for="telefone" display="text" />
+                        
+                        <p:outputLabel for="email" value="e-mail: " />
+                        <p:inputText id="email" label="e-mail: " required="true" requiredMessage="O campo e-mail é obrigatório"
+                                     size="30" value="#{usuarioController.usuario.email}" >
+                            <f:validator validatorId="validaEmail" />
+                        </p:inputText>
+                        <p:message for="email" display="text" />
+                        
+                        <p:outputLabel for="login" value="Login:" />
+                        <p:inputText id="login" label="Login: " required="true" requiredMessage="O campo Login é obrigatório"
+                                     size="30" value="#{usuarioController.usuario.login}">
+                            <f:validator validatorId="validaLogin" />
+                        </p:inputText>
+                        <p:message for="login" display="text" />
+                        
+                        <p:outputLabel for="senha" value="Senha: "/>
+                        <p:password redisplay="true" id="senha" label="Senha: " required="true" requiredMessage="O campo Senha é obrigatório"
+                                    size="30" value="#{usuarioController.usuario.senha}"/>
+                        <p:message for="senha" display="text" />
+                        
+                        <h:outputLabel for="grupos" value="Grupos:" />
+                        <p:selectCheckboxMenu id="grupos" value="#{usuarioController.usuario.grupos}" label="Grupos:"
+                                              filter="true" filterMatchMode="startsWith" panelStyle="width:303px" converter="grupoConverter">
+                            <f:selectItems var="grupo" value="#{grupoController.lista}" itemLabel="#{grupo.descricao}" itemValue="#{grupo}" />
+                        </p:selectCheckboxMenu>
+                    </h:panelGrid>
+                    <br /><br />
+                    <p:commandButton value="Salvar" actionListener="#{usuarioController.salvarUsuario()}"
+                                     update=":usuario_listagem:lstUsuarios, grdNovoUsuario, :msgPrincipal"
+                                     id="btSalvarUsuario"/>
+                    <p:commandButton value="Cancelar" actionListener="#{usuarioController.cancela()}" 
+                                     oncomplete="PF('dlg1').hide();" immediate="true"
+                                     update="@form"/> 
+                </h:form>
+            </p:dialog> 
+        </ui:define>
+    </ui:composition>
+
+</html>

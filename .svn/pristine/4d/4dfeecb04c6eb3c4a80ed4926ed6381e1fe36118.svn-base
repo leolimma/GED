@@ -1,0 +1,73 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package br.com.goku.controller;
+
+import br.com.goku.model.Grupo;
+import br.com.goku.persistence.Dao;
+import br.com.goku.util.JsfUtil;
+import java.util.List;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
+
+@Named(value = "grupoController")
+@RequestScoped
+/**
+ *
+ * @author Alan
+ */
+public class GrupoController {
+
+    private Grupo grupo = new Grupo();
+    private final Dao grupoDAO;
+    private List<Grupo> lista;
+
+    public GrupoController() {
+        this.grupo = new Grupo();
+        this.grupoDAO = new Dao(Grupo.class);
+    }
+
+    public void salvarGrupo() {
+        this.grupoDAO.edit(this.grupo);
+        this.grupo = new Grupo();
+        this.lista = null;
+        JsfUtil.addSuccessMessage("Grupo cadastrado com sucesso!");
+    }
+
+    public String excluirGrupo() {
+        this.grupoDAO.remove(this.grupo);
+        this.grupo = new Grupo();
+        this.lista = null;
+        JsfUtil.addSuccessMessage("Grupo excluído com sucesso!");
+        return null;
+    }
+    
+    public void limparGrupo(){
+        this.grupo = new Grupo();
+    }
+    
+    public List<Grupo> getLista() {
+        if (this.lista == null) {
+            this.lista = grupoDAO.findAll();
+        }
+        return lista;
+    }
+
+    public void setLista(List<Grupo> lista) {
+        this.lista = lista;
+    }
+
+    public Grupo getGrupo() {
+        return grupo;
+    }
+
+    public void setGrupo(Grupo grupo) {
+        this.grupo = grupo;
+    }
+
+    public Grupo getGrupo(Integer key) {
+        return (Grupo) grupoDAO.findById(key);
+    }
+}

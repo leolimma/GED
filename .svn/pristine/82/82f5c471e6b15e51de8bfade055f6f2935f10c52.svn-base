@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config version="2.2"
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+
+    <application>
+        <locale-config>
+            <default-locale>pt</default-locale>
+        </locale-config>
+        <resource-bundle>
+            <base-name>br/com/goku/messages/info</base-name>
+            <var>info</var>
+        </resource-bundle>
+    </application>
+    <validator>
+        <validator-id>validaEmail</validator-id>
+        <validator-class>br.com.goku.util.EmailValidator</validator-class>
+    </validator>
+    <validator>
+        <validator-id>validaLogin</validator-id>
+        <validator-class>br.com.goku.util.LoginValidator</validator-class>
+    </validator>
+</faces-config>

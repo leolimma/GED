@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:composition template="/templates/interna.xhtml">
+
+        <ui:define name="titulo">
+            Enviar Documento 
+        </ui:define>
+
+        <ui:define name="corpo">
+
+            <h:form id="cadastro" enctype="multipart/form-data">
+                <p:messages autoUpdate="true" closable="true" />
+                <h:inputHidden value="#{documentoController.documento.codigo}" />    
+                <div id="enviaDocumento_dados" >
+                    <h4><b>Informações</b></h4>
+                    <br />
+                    <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+                        <p:outputLabel value="Categoria: *" />
+                        <p:tree value="#{documentoController.categoriasTree}" var="node"                                     
+                                dynamic="false" selectionMode="single" >
+                            <p:ajax event="select" listener="#{documentoController.selecionar}" update=":cadastro" />
+                            <p:treeNode>
+                                <p:graphicImage library="imagens" name="folder.png"/>
+                                <h:outputText value="#{node.descricao}" />
+                            </p:treeNode>
+                        </p:tree>  
+                        <br />
+                        <p:outputLabel value="Selecionada: #{documentoController.categoriaSelecionada.descricao} " />
+
+                        <p:outputLabel for="tipologia" value="Tipologia: *" />
+                        <h:selectOneMenu id="tipologia"  valueChangeListener="#{documentoController.setTipologia}"  style="width:125px">
+                            <f:selectItem itemLabel="Selecione" noSelectionOption="true" />
+                            <f:selectItems var="tipo" value="#{tipologiaController.lista}" itemValue="#{tipo.codigo}" itemLabel="#{tipo.descricao}" /> 
+                        </h:selectOneMenu>
+
+                        <p:outputLabel for="metadado_titulo" value="Título: *" />
+                        <p:inputText id="metadado_titulo" label="Título: " value="#{documentoController.documento.metadadoTitulo}" />
+
+                        <p:outputLabel for="metadado_data" value="Data: " />
+                        <p:inputText id="metadado_data" label="Data: " value="#{documentoController.documento.metadadoData}" />
+
+                        <p:outputLabel for="metadado_autor" value="Autor: " />
+                        <p:inputText id="metadado_autor" label="Autor: " value="#{documentoController.documento.metadadoAutor}" />
+
+                        <p:outputLabel for="metadado_palavra_chave" value="Palavra Chave: " />
+                        <p:inputText id="metadado_palavra_chave" label="Palavra Chave: " value="#{documentoController.documento.metadadoPalavraChave}" />
+                    </h:panelGrid>
+                    <p:commandButton value="Voltar" action="documento?faces-redirect=true" icon="ui-icon-arrowthick-1-w"/>
+                </div>                   
+
+                <div id="enviaDocumento_arquivo" >
+                    <h4><b>Documento: *</b></h4>
+                    <p:fileUpload fileUploadListener="#{documentoController.upload}" mode="advanced" fileLimit="1" dragDropSupport="true" update="btnFinalizar" label="Escolher" uploadLabel="Carregar" cancelLabel="Cancelar" fileLimitMessage="O limite máximo de arquivo foi atingido" /> 
+                    <br />
+                    <p:commandButton id="btnFinalizar" action="#{documentoController.salvar()}"
+                                     value="Finalizar" update="cadastro"
+                                     disabled="#{documentoController.habilitaBotao}" /> 
+                    <p:commandButton id="btnCancelar" action="documento?faces-redirect=truei=1" value="Cancelar" />
+                </div>
+            </h:form>            
+
+        </ui:define> 
+
+    </ui:composition>
+
+</html>
+

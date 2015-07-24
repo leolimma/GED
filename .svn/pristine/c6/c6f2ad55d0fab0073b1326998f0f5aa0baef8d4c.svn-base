@@ -1,0 +1,90 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package br.com.goku.controller;
+
+import br.com.goku.model.Grupo;
+import br.com.goku.persistence.Dao;
+import br.com.goku.util.JsfUtil;
+import java.io.Serializable;
+import java.util.List;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+import org.primefaces.context.RequestContext;
+
+@Named(value = "grupoController")
+@ViewScoped
+/**
+ *
+ * @author Alan
+ */
+public class GrupoController implements Serializable{
+
+    private Grupo grupo = new Grupo();
+    private final Dao grupoDAO;
+    private List<Grupo> lista;
+    private List<Grupo> listaFiltro;
+
+    public GrupoController() {
+        this.grupo = new Grupo();
+        this.grupoDAO = new Dao(Grupo.class);
+    }
+
+    public void salvarGrupo() {
+        this.grupoDAO.edit(this.grupo);
+        this.grupo = new Grupo();
+        this.lista = null;
+        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Grupo cadastrado com sucesso!", "Usuário cadastrado com sucesso!");
+        FacesContext context = FacesContext.getCurrentInstance();
+        context.addMessage("grupo_listagem", facesMessage);
+        RequestContext.getCurrentInstance().execute("PF('dlg1').hide()");
+    }
+
+    public String excluirGrupo() {
+        this.grupoDAO.remove(this.grupo);
+        this.grupo = new Grupo();
+        this.lista = null;
+        JsfUtil.addSuccessMessage("Grupo excluído com sucesso!");
+        return null;
+    }
+    
+    public void limparGrupo(){
+        this.grupo = new Grupo();
+    }
+    
+    public List<Grupo> getLista() {
+        if (this.lista == null) {
+            this.lista = grupoDAO.findAll();
+        }
+        return lista;
+    }
+
+    public void setLista(List<Grupo> lista) {
+        this.lista = lista;
+    }
+
+    public List<Grupo> getListaFiltro() {
+        return listaFiltro;
+    }
+
+    public void setListaFiltro(List<Grupo> listaFiltro) {
+        this.listaFiltro = listaFiltro;
+    }
+    
+
+    public Grupo getGrupo() {
+        return grupo;
+    }
+
+    public void setGrupo(Grupo grupo) {
+        this.grupo = grupo;
+    }
+
+    public Grupo getGrupo(Integer key) {
+        return (Grupo) grupoDAO.findById(key);
+    }
+}

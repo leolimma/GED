@@ -1,0 +1,85 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package br.com.goku.controller;
+
+import br.com.goku.model.Tipologia;
+import br.com.goku.persistence.Dao;
+import br.com.goku.util.JsfUtil;
+import java.util.List;
+import javax.enterprise.context.RequestScoped;
+import javax.faces.application.ConfigurableNavigationHandler;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.inject.Named;
+import org.primefaces.context.RequestContext;
+
+/**
+ *
+ * @author Alan
+ */
+
+@Named(value = "tipologiaController")
+@RequestScoped
+public class TipologiaController{
+    
+    private Tipologia tipologia = new Tipologia();
+    private final Dao tipologiaDAO;
+    private List<Tipologia> lista;
+    
+    public TipologiaController(){
+        this.tipologia = new Tipologia();
+        this.tipologiaDAO = new Dao(Tipologia.class);        
+    }
+    
+    public void salvarTipologia(){
+        this.tipologiaDAO.edit(this.tipologia);
+        this.tipologia = new Tipologia();
+        this.lista = null;
+        FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Tipologia cadastrada com sucesso!", "Usuário cadastrado com sucesso!");
+        FacesContext context = FacesContext.getCurrentInstance();
+        context.addMessage("tipologia_listagem", facesMessage);
+        RequestContext.getCurrentInstance().execute("PF('dlg1').hide()");
+    }
+    
+    public void editarTipologia(){
+        
+    }   
+    
+    /**
+     * Recarrega a página tipologia.html
+     */
+    public void cancela() {
+        ConfigurableNavigationHandler handler = (ConfigurableNavigationHandler) FacesContext.getCurrentInstance().getApplication().getNavigationHandler();
+        handler.performNavigation("tipologia.html?faces-redurect=true");
+    }
+    
+    public String excluirTipologia(){
+        this.tipologiaDAO.remove(this.tipologia);
+        this.tipologia = new Tipologia();
+        this.lista = null;
+        JsfUtil.addSuccessMessage("Tipologia excluída com sucesso!");
+        return null;
+    }
+    
+     public List<Tipologia> getLista() {
+        if (this.lista == null) {
+            this.lista = tipologiaDAO.findAll();
+        }
+        return lista;
+    }
+    
+    public void setLista(List<Tipologia> lista) {
+        this.lista = lista;
+    }
+
+    public Tipologia getTipologia() {
+        return tipologia;
+    }
+
+    public void setTipologia(Tipologia tipologia) {
+        this.tipologia = tipologia;
+    }    
+}

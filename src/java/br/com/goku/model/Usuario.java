@@ -1,0 +1,219 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package br.com.goku.model;
+
+/**
+ *
+ * @author Alan
+ */
+
+import br.com.caelum.stella.bean.validation.CPF;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import javax.persistence.Entity;
+import javax.persistence.*;
+
+@Entity
+@Table(name="usuario")
+@NamedQueries({
+                @NamedQuery(name="Usuario.findAll", query="select u from Usuario u"),
+                @NamedQuery(name="Usuario.findByLogin", query="select u from Usuario u where u.login = :login")
+})
+public class Usuario implements Serializable { 
+    
+    private static final long serialVersionUID = -4351714603726728824L;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="codigo", nullable = false, unique=true)
+    private Integer codigo;
+    
+    @Column(name="nome", nullable = false)
+    private String nome;
+   
+    @Column(name="cpf", nullable=false, length = 14)
+    @CPF(message = "Este CPF não é válido.")
+    private String cpf;
+    
+    @Column(name="telefone", nullable=false)
+    private String telefone;
+    
+    @Column(name="email", nullable=false)
+    private String email;
+    
+    @Column(name="login", nullable=false, unique = true)
+    private String login;
+    
+    @Column(name="senha", nullable = false)
+    private String senha;
+    
+    @Column(name="ativo", nullable = false)
+    private boolean ativo;
+    
+    @ElementCollection(targetClass = String.class)
+    @JoinTable(
+	name="usuario_permissao",
+	uniqueConstraints = {@UniqueConstraint(columnNames = {"usuario","permissao"})},
+	joinColumns = @JoinColumn(name="usuario")
+    )
+    @Column(name="permissao", length=50)
+    private Set<String> permissao = new HashSet<String>();
+
+    @ManyToMany(cascade=CascadeType.ALL)
+    @JoinTable(
+        name ="usuario_grupo",
+        joinColumns = @JoinColumn ( name ="usuario_codigo"),
+        inverseJoinColumns = @JoinColumn ( name ="grupo_codigo"))
+    private List<Grupo> grupos ;
+
+    public Usuario(){
+        this.grupos = new ArrayList<Grupo>();
+    }
+    
+    public Integer getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(Integer codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public Set<String> getPermissao() {
+        return permissao;
+    }
+
+    public void setPermissao(Set<String> permissao) {
+        this.permissao = permissao;
+    }
+
+    public List<Grupo> getGrupos() {
+        return grupos;
+    }
+
+    public void setGrupos(List<Grupo> grupos) {
+        this.grupos = grupos;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + Objects.hashCode(this.codigo);
+        hash = 83 * hash + Objects.hashCode(this.nome);
+        hash = 83 * hash + Objects.hashCode(this.cpf);
+        hash = 83 * hash + Objects.hashCode(this.telefone);
+        hash = 83 * hash + Objects.hashCode(this.email);
+        hash = 83 * hash + Objects.hashCode(this.login);
+        hash = 83 * hash + Objects.hashCode(this.senha);
+        hash = 83 * hash + (this.ativo ? 1 : 0);
+        hash = 83 * hash + Objects.hashCode(this.permissao);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Usuario other = (Usuario) obj;
+        if (!Objects.equals(this.codigo, other.codigo)) {
+            return false;
+        }
+        if (!Objects.equals(this.nome, other.nome)) {
+            return false;
+        }
+        if (!Objects.equals(this.cpf, other.cpf)) {
+            return false;
+        }
+        if (!Objects.equals(this.telefone, other.telefone)) {
+            return false;
+        }
+        if (!Objects.equals(this.email, other.email)) {
+            return false;
+        }
+        if (!Objects.equals(this.login, other.login)) {
+            return false;
+        }
+        if (!Objects.equals(this.senha, other.senha)) {
+            return false;
+        }
+        if (this.ativo != other.ativo) {
+            return false;
+        }
+        if (!Objects.equals(this.permissao, other.permissao)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{" + "codigo=" + codigo + ", nome=" + nome + ", cpf=" + cpf + ", telefone=" + telefone + ", email=" + email + ", login=" + login + ", senha=" + senha + ", ativo=" + ativo + ", permissao=" + permissao + ", grupos=" + grupos + '}';
+    }
+    
+}

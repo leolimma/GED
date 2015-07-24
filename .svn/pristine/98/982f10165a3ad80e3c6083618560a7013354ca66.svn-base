@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:sec="http://www.springframework.org/security/facelets/tags"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:composition template="/templates/interna.xhtml">
+
+        <ui:define name="titulo">
+            Documentos
+        </ui:define> 
+
+        <ui:define name="corpo">
+            <f:view contentType="text/html">
+                <h:form>
+                    <p:messages closable="true" autoUpdate="true" />
+                    <p:commandButton value="#{info.btEnviarDocumento}" action="enviaDocumento?faces-redirect=truei=1" />
+                </h:form>
+                <br />
+                <div id="categorias"> 
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <h:panelGroup>     
+                            <h:form id="arvore">
+                                <p:tree value="#{documentoController.categoriasTree}" var="node"                                     
+                                        dynamic="false" selectionMode="single">
+                                    <p:ajax event="select" listener="#{documentoController.selecionar}" update=":documento_listagem" />
+                                    <p:treeNode>
+                                        <p:graphicImage library="imagens" name="folder.png"/>
+                                        <h:outputText value="#{node.descricao}" />
+                                    </p:treeNode>
+                                </p:tree>                                
+                            </h:form> 
+                            <br />
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </div>
+                <div id="listagem" >
+                    <h:panelGroup>
+                        <h:form id="documento_listagem">                            
+                            <p:dataTable var="documento" value="#{documentoController.lista}" emptyMessage="#{info.msgListaVazia}" 
+                                         widgetVar="documentoTable" filteredValue="#{documentoController.listaFiltro}" 
+                                         rows="4" paginator="true"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         paginatorPosition="top">
+                                <!--                                <f:facet name="header">
+                                                                    <p:outputPanel>
+                                                                        <h:outputText value="Pesquisar todos os campos:" />
+                                                                        <p:inputText id="globalFilter" onkeyup="PF('documentoTable').filter()" style="width:150px" placeholder="Palavra Chave"/>
+                                                                    </p:outputPanel>
+                                                                </f:facet>-->
+                                <p:column headerText="Visualizar">
+                                    <h:outputLink value="../arquivos/#{documento.codigo}.pdf" target="_blank">
+                                        <p:graphicImage library="imagens" name="pdf.png" /> 
+                                    </h:outputLink>                                   
+                                </p:column>                            
+                                <p:column headerText="Título" filterBy="#{documento.metadadoTitulo}" filterMatchMode="contains">
+                                    <h:outputText value="#{documento.metadadoTitulo}" />
+                                </p:column> 
+                                <p:column headerText="Arquivo" filterBy="#{documento.dataArquivo}"  filterMatchMode="contains">
+                                    <h:outputText value="#{documento.dataArquivo.time}" >
+                                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" />
+                                    </h:outputText>
+                                </p:column> 
+
+                                <p:column headerText="Usuário" filterBy="#{documento.usuario.nome}" filterMatchMode="contains">
+                                    <h:outputText value="#{documento.usuario.nome}" />
+                                </p:column> 
+                                <p:column headerText="Tipologia" filterBy="#{documento.tipologia.descricao}"  filterMatchMode="contains">
+                                    <h:outputText value="#{documento.tipologia.descricao}" />
+                                </p:column> 
+                                <p:column headerText="Autor" filterBy="#{documento.metadadoAutor}"  filterMatchMode="contains">
+                                    <h:outputText value="#{documento.metadadoAutor}" />
+                                </p:column>                                 
+                                <p:column headerText="Data" filterBy="#{documento.metadadoData}"  filterMatchMode="contains">
+                                    <h:outputText value="#{documento.metadadoData}" />
+                                </p:column> 
+                                <p:column headerText="Chave" filterBy="#{documento.metadadoPalavraChave}"  filterMatchMode="contains">
+                                    <h:outputText value="#{documento.metadadoPalavraChave}" />
+                                </p:column>                                 
+                                <sec:ifAnyGranted roles="ROLE_ADMINISTRADOR">
+                                    <p:column headerText="Excluir">
+                                        <p:commandLink update="@form" action="#{documentoController.excluir()}">
+                                            <p:graphicImage library="imagens" name="excluir.png" />
+                                            <f:setPropertyActionListener target="#{documentoController.documento}" value="#{documento}" />
+                                            <p:confirm header="Confirmação" message="Deseja mesmo remover este documento?" icon="ui-icon-alert" />
+                                        </p:commandLink>
+                                    </p:column> 
+                                </sec:ifAnyGranted>
+                            </p:dataTable>
+                        </h:form>
+                    </h:panelGroup>
+                </div>
+            </f:view>
+        </ui:define>       
+
+    </ui:composition>   
+
+</html>

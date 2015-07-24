@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:composition template="/templates/interna.xhtml">
+
+        <ui:define name="titulo">
+            Tipologia Documental
+        </ui:define>
+
+        <ui:define name="corpo">
+
+            <h:form id="tipologia_listagem">
+                <p:messages />
+                <p:commandButton value="#{info.btNovaTipologia}" type="button" icon="ui-icon-plus" onclick="PF('dlg1').show();"
+                                 styleClass="btNovo"/>                
+
+                <p:dataTable var="tipologia" value="#{tipologiaController.lista}" emptyMessage="#{info.msgListaVazia}"                              
+                             rows="9" paginator="true"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             paginatorPosition="top"> >
+                    <p:column headerText="Codigo">
+                        <h:outputText value="#{tipologia.codigo}" />
+                    </p:column>
+                    <p:column headerText="Descrição">
+                        <h:outputText value="#{tipologia.descricao}" />
+                    </p:column>
+                    <p:column headerText="Editar" style="text-align: center">
+                        <p:commandLink oncomplete="PF('dlg1').show();" update=":cadastro">
+                            <h:graphicImage library="imagens" name="editar.png" style="border:0" />
+                            <f:setPropertyActionListener value="#{tipologia}" target="#{tipologiaController.tipologia}" />
+                        </p:commandLink>
+                    </p:column>
+                    <p:column headerText="Excluir" style="text-align: center">
+                        <p:commandLink action="#{tipologiaController.excluirTipologia()}" update="@form" onclick="if (!confirm('Confirma a exclusão da tipologia #{tipologia.descricao}?'))
+                                    return false;">
+                            <h:graphicImage library="imagens" name="excluir.png" style="border:0" />
+                            <f:setPropertyActionListener value="#{tipologia}" target="#{tipologiaController.tipologia}" />                            
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable> 
+            </h:form>
+
+            <p:dialog header="#{info.dlgTipologiaHeader}" widgetVar="dlg1" resizable="false" modal="true"
+                      closable="false" appendTo="@(body)">
+                <h:form id="cadastro">
+                    <h:panelGrid columns="2">
+                        <p:outputLabel for="descricao" value="Descrição: " />
+                        <p:inputText id="descricao" label="Descrição: " required="true" size="30" value="#{tipologiaController.tipologia.descricao}"/>
+                    </h:panelGrid>
+                    <br /><br />
+                    <p:commandButton value="Salvar" action="#{tipologiaController.salvarTipologia()}" 
+                                     process="@form"
+                                     update="@form :tipologia_listagem" 
+                                     oncomplete="PF('dlg1').hide();" />
+                    <p:commandButton value="Cancelar" onclick="PF('dlg1').hide();"
+                                     actionListener="#{tipologiaController.cancela()}"
+                                     update="@form" immediate="true" process="@this"/>
+                </h:form>
+            </p:dialog>
+
+        </ui:define>
+
+    </ui:composition>
+
+</html>

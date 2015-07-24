@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/templates/interna.xhtml">
+
+        <ui:define name="titulo">
+            Permissões de Acesso
+        </ui:define>
+
+
+        <ui:define name="corpo">
+            <h:form id="frmLstAcesso">
+                <p:messages autoUpdate="true" showIcon="false" closable="true" />
+                <p:commandButton value="#{info.btNovo}" icon="ui-icon-plus" onclick="PF('dlgNovoAcesso').show()" />
+                <p:dataTable value="#{acessoController.acessos}" var="acesso"
+                             emptyMessage="#{info.msgListaVazia}" id="lstAcessos">
+                    <p:column headerText="Grupo">
+                        #{acesso.grupo.descricao}
+                    </p:column>
+                    <p:column headerText="Categoria">
+                        #{acesso.categoria.descricao}
+                    </p:column>
+                    <p:column headerText="Leitura">
+                        <h:outputText value="SIM" rendered="#{acesso.leitura}" style="color: green;" />
+                        <h:outputText value="NÃO" rendered="#{!acesso.leitura}" style="color: red;" />
+                    </p:column>
+                    <p:column headerText="Escrita">
+                        <h:outputText value="SIM" rendered="#{acesso.escrita}" style="color: green;" />
+                        <h:outputText value="NÃO" rendered="#{!acesso.escrita}" style="color: red;" />
+                    </p:column>
+                    <p:column headerText="Editar" style="text-align: center">
+                        <p:commandLink oncomplete="PF('dlgNovoAcesso').show();" update=":NovoAcessoDlg">
+                            <h:graphicImage library="imagens" name="editar.png" style="border:0" />
+                            <f:setPropertyActionListener value="#{acesso}" target="#{acessoController.acesso}" />
+                        </p:commandLink>
+                    </p:column>
+                    <p:column headerText="Excluir" style="text-align: center">
+                        <p:commandLink action="#{acessoController.excluirAcesso()}" update="lstAcessos" onclick="if (!confirm('Confirma a exclusão do acesso?'))
+                                    return false;">
+                            <h:graphicImage library="imagens" name="excluir.png" style="border:0" />
+                            <f:setPropertyActionListener value="#{acesso}" target="#{acessoController.acesso}" />                            
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+            <p:dialog widgetVar="dlgNovoAcesso" id="NovoAcessoDlg" modal="true"
+                      appendTo="@(body)" header="Novo Acesso" resizable="false" closable="true">
+
+                <h:form id="frmAcesso">
+                    <h:panelGrid columns="3">
+                        <h:outputText value="#{info.labelNovoAcessoGrupo}" />
+                        <p:selectOneMenu value="#{acessoController.acesso.grupo}" id="cmbGrupo">
+                            <f:selectItem itemLabel="Selecione um grupo..." noSelectionOption="true"/>
+                            <f:selectItems value="#{grupoController.lista}" var="grupo"
+                                           itemLabel="#{grupo.descricao}" itemValue="#{grupo}" />
+                        </p:selectOneMenu>
+                        <p:message display="text" for="cmbGrupo" />
+
+                        <h:outputText value="#{info.labelNovoAcessoCategoria}" />
+                        <p:selectOneMenu value="#{acessoController.acesso.categoria}" id="cmbCategoria">
+                            <f:selectItem itemLabel="Selecione uma categoria..." noSelectionOption="true" />
+                            <f:selectItems value="#{categoriaController.categoriasSelect}" var="cat"
+                                           itemLabel="#{cat.description}" itemValue="#{cat}" />
+                        </p:selectOneMenu>
+                        <p:message display="text" for="cmbCategoria" />
+
+                        <h:outputText value="#{info.labelNovoAcessoLeitura}" />
+                        <p:selectOneRadio id="radioLeitura" value="#{acessoController.acesso.leitura}">
+                            <f:selectItem itemLabel="SIM" itemValue="true" />
+                            <f:selectItem itemLabel="NÃO" itemValue="false" />
+                        </p:selectOneRadio>
+                        <p:message display="text" for="radioLeitura" />
+
+                        <h:outputText value="#{info.labelNovoAcessoEscrita}" />
+                        <p:selectOneRadio id="radioEscrita" value="#{acessoController.acesso.escrita}">
+                            <f:selectItem itemLabel="SIM" itemValue="true" />
+                            <f:selectItem itemLabel="NÃO" itemValue="false" />
+                        </p:selectOneRadio>
+                        <p:message display="text" for="radioEscrita" />
+                    </h:panelGrid>
+                    <p:commandButton value="#{info.btSalvar}" 
+                                     action="#{acessoController.salvarAcesso()}" 
+                                     update="@form, :frmLstAcesso"
+                                     oncomplete="PF('dlgNovoAcesso').hide()"/>
+                </h:form>
+
+            </p:dialog>
+        </ui:define>
+    </ui:composition>
+</html>
+

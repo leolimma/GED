@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:composition template="/templates/interna.xhtml">
+
+        <ui:define name="titulo">
+            Usuários
+        </ui:define>
+
+        <ui:define name="corpo">
+            <p:messages autoUpdate="true" closable="true"/>
+
+            <h:form id="cadastro">
+                <h:inputHidden value="#{usuarioController.usuario.codigo}" />
+                <h:inputHidden value="#{usuarioController.usuario.ativo}" />
+
+                <p:commandButton value="#{info.btNovoUsuario}" type="button" icon="ui-icon-plus" onclick="PF('dlg1').show();"
+                                 styleClass="btNovo"/>
+                <p:dialog header="#{info.dlgUsuarioHeader}" widgetVar="dlg1" id="novoUsuarioDlg" resizable="false"
+                          modal="true" closable="false" appendTo="@(body)">   
+
+                    <h:panelGrid id="grdNovoUsuario" columns="2">
+                        <p:outputLabel for="nome" value="Nome: " />
+                        <p:inputText id="nome" label="Nome: " required="true" size="30" value="#{usuarioController.usuario.nome}"/>
+                        <p:outputLabel for="cpf" value="CPF: " />
+                        <p:inputMask id="cpf" mask="999.999.999-99" label="CPF: " required="true"  size="30" value="#{usuarioController.usuario.cpf}"/>
+                        <p:outputLabel for="telefone" value="Telefone: "/>
+                        <p:inputMask id="telefone" mask="(99) 9999-9999" label="Telefone: " required="true" size="30" value="#{usuarioController.usuario.telefone}"/>
+                        <p:outputLabel for="email" value="e-mail: " />
+                        <p:inputText id="email" label="e-mail: " required="true" size="30" value="#{usuarioController.usuario.email}" >
+                            <f:validator validatorId="validaEmail" />
+                        </p:inputText>
+                        <p:outputLabel for="login" value="Login" />
+                        <p:inputText id="login" label="Login: " required="true" size="30" value="#{usuarioController.usuario.login}"/>
+                        <p:outputLabel for="senha" value="Senha: "/>
+                        <p:password redisplay="true" id="senha" label="Senha: " required="true" size="30" value="#{usuarioController.usuario.senha}"/>
+                        <h:outputLabel for="grupos" value="Grupos:" />
+                        <p:selectCheckboxMenu id="grupos" value="#{usuarioController.usuario.grupos}" label="Grupos:"
+                                              filter="true" filterMatchMode="startsWith" panelStyle="width:303px" converter="grupoConverter">
+                            <f:selectItems var="grupo" value="#{grupoController.lista}" itemLabel="#{grupo.descricao}" itemValue="#{grupo}" />
+                        </p:selectCheckboxMenu>
+                    </h:panelGrid>
+                    <br /><br />
+                    <p:commandButton value="Salvar" action="#{usuarioController.salvarUsuario()}" update="@form :usuario_listagem, grdNovoUsuario" oncomplete="PF('dlg1').hide();" />
+                    <p:commandButton value="Cancelar" actionListener="#{usuarioController.cancela()}" 
+                                     oncomplete="PF('dlg1').hide();" immediate="true"
+                                     update="@form"/> 
+
+                </p:dialog> 
+            </h:form>
+
+            <h:form id="usuario_listagem">
+
+                <p:dialog id="dlgGrupos" header="Grupos" widgetVar="grp" modal="true" resizable="false" appendTo="@(body)">
+                    <h:outputText value="O usuário #{usuarioController.usuario.nome} está no(s) seguinte(s) grupo(s): " /> 
+                    <p:dataList id="lstGrupo" value="#{usuarioController.usuario.grupos}" var="grupo"
+                                type="ordered" emptyMessage="#{info.msgListaVazia}" >                       
+                        #{grupo.descricao}
+                    </p:dataList>
+                </p:dialog>           
+
+                <p:dataTable var="usuario" value="#{usuarioController.lista}">
+                    <p:column headerText="Ativo" style="text-align: center"> 
+                        <p:commandLink action="#{usuarioController.ativar()}" update=":usuario_listagem">
+                            <p:graphicImage library="imagens" name="usuario_ativo_#{usuario.ativo}.png" />
+                            <f:setPropertyActionListener target="#{usuarioController.usuario}" value="#{usuario}"  />                            
+                        </p:commandLink>
+                    </p:column>     
+
+                    <p:column headerText="Grupos" style="text-align: center">
+                        <p:commandLink update=":usuario_listagem:dlgGrupos" oncomplete="PF('grp').show();" >
+                            <p:graphicImage library="imagens" name="pesquisar.png" style="border:0" />
+                            <f:setPropertyActionListener target="#{usuarioController.usuario}" value="#{usuario}" />
+                        </p:commandLink>
+                    </p:column>                    
+
+                    <p:column headerText="Nome">
+                        <h:outputText value="#{usuario.nome}" />
+                    </p:column>
+
+                    <p:column headerText="CPF">
+                        <h:outputText value="#{usuario.cpf}" />
+                    </p:column>
+
+                    <p:column headerText="Telefone">
+                        <h:outputText value="#{usuario.telefone}" />
+                    </p:column>
+
+                    <p:column headerText="Email">
+                        <h:outputText value="#{usuario.email}" />
+                    </p:column>                   
+
+                    <p:column headerText="Login">
+                        <h:outputText value="#{usuario.login}" />
+                    </p:column>
+                    <p:column headerText="Administrador" style="text-align: center">
+                        <p:commandLink action="#{usuarioController.atribuiPermissao()}" update=":usuario_listagem">
+                            <p:graphicImage library="imagens" name="ROLE_ADMINISTRADOR_#{usuario.permissao.contains('ROLE_ADMINISTRADOR')}.png" />					
+                            <f:setPropertyActionListener target="#{usuarioController.usuario}" value="#{usuario}" />
+                        </p:commandLink>
+                    </p:column>
+                    <p:column headerText="Editar" style="text-align: center">
+                        <p:commandLink oncomplete="PF('dlg1').show();" update=":cadastro">
+                            <h:graphicImage library="imagens" name="editar.png" style="border:0" />
+                            <f:setPropertyActionListener value="#{usuario}" target="#{usuarioController.usuario}" />
+                        </p:commandLink>
+                    </p:column>
+                    <p:column headerText="Excluir" style="text-align: center">
+                        <p:commandLink action="#{usuarioController.excluirUsuario()}" update="@form" onclick="if (!confirm('Confirma a exclusão do usuário #{usuario.nome}?'))
+                                    return false;">
+                            <h:graphicImage library="imagens" name="excluir.png" style="border:0" />
+                            <f:setPropertyActionListener value="#{usuario}" target="#{usuarioController.usuario}" />                            
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+
+</html>

@@ -1,0 +1,130 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package br.com.goku.controller;
+
+import br.com.goku.model.Categoria;
+import br.com.goku.persistence.Dao;
+import br.com.goku.util.JsfUtil;
+import br.com.goku.util.CategoriaArvore;
+import java.io.Serializable;
+import javax.inject.Named;
+import java.util.*;
+import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import org.primefaces.event.NodeSelectEvent;
+import org.primefaces.model.TreeNode;
+
+/** 
+ *
+ * @author Alan
+ */
+
+@Named(value = "categoriaController")
+@ViewScoped
+public class CategoriaController implements Serializable{
+    
+    private final Dao categoriaDAO;
+    private Categoria editada = new Categoria();
+    private TreeNode categoriasTree;
+    private List<SelectItem> categoriasSelect;
+    private boolean mostraEdicao = false;
+    
+    public CategoriaController(){
+        this.categoriaDAO = new Dao(Categoria.class);
+        this.editada = new Categoria();
+        this.mostraEdicao = false;
+    }
+    
+    public void novo(){
+        Categoria pai = null;
+        if(this.editada.getCodigo() != null){
+            pai = (Categoria) categoriaDAO.findById(this.editada.getCodigo());
+        }
+        this.editada = new Categoria();
+        this.editada.setPai(pai);
+        this.mostraEdicao = true;
+    }
+    
+    public void selecionar(NodeSelectEvent event){
+        this.editada = (Categoria) event.getTreeNode().getData();
+        Categoria pai = this.editada.getPai();
+        if(this.editada != null && pai != null && pai.getCodigo() != null){
+            this.mostraEdicao = true;
+        }else{
+            this.mostraEdicao = false;
+        }
+    }
+    
+    public void salvar(){
+        //RN
+        Categoria pai = this.editada.getPai();
+        if(pai == null){
+            String msg = "A Categoria " + this.editada.getDescricao() + " deve ter um pai definido";
+            throw new IllegalArgumentException(msg);
+        }      
+        
+        categoriaDAO.saveCategoria(this.editada);
+        JsfUtil.addSuccessMessage("Categoria "+editada.getDescricao()+ " cadastrada com sucesso dentro da categoria "+editada.getPai().getDescricao());
+        
+        this.editada = null;
+        this.mostraEdicao = false;
+        this.categoriasTree = null;
+        this.categoriasSelect = null;
+    }
+    
+    public void excluir(){
+        //categoriaDAO.removeCategoria(this.editada, this.editada.getCodigo());
+        this.editada = (Categoria) categoriaDAO.findById(this.editada.getCodigo());
+        categoriaDAO.remove(this.editada);
+        JsfUtil.addSuccessMessage("Categoria excluída com sucesso!");
+        
+        this.editada = null;
+        this.mostraEdicao = false;
+        this.categoriasTree = null;
+        this.categoriasSelect = null;         
+    }
+    
+    public TreeNode getCategoriasTree() {
+        return CategoriaArvore.getCategoriasTree(categoriaDAO.findAll());
+    }
+    
+    public List<SelectItem> getCategoriasSelect(){
+        if(this.categoriasSelect == null){
+            this.categoriasSelect = new ArrayList<SelectItem>();
+            List<Categoria> categorias = categoriaDAO.findAll();
+            this.montaDadosSelect(this.categoriasSelect, categorias, "");
+        }
+        return categoriasSelect;
+    }
+    
+    public void montaDadosSelect(List<SelectItem> select, List<Categoria> categorias, String prefixo){
+        SelectItem item = null;
+        if(categorias != null){
+            for(Categoria categoria : categorias){
+                item = new SelectItem(categoria, prefixo + categoria.getDescricao());
+                item.setEscape(false);
+                select.add(item);
+                this.montaDadosSelect(select, categoria.getFilhos(), prefixo + "&nbsp;&nbsp;");
+            }
+        }
+    }
+
+    public Categoria getEditada() {
+        return editada;
+    }
+
+    public void setEditada(Categoria editada) {
+        this.editada = editada;
+    }
+
+    public boolean isMostraEdicao() {
+        return mostraEdicao;
+    }
+
+    public void setMostraEdicao(boolean mostraEdicao) {
+        this.mostraEdicao = mostraEdicao;
+    }    
+}

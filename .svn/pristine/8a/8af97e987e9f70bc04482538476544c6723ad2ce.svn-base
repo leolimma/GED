@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:composition template="/templates/interna.xhtml">
+
+        <ui:define name="titulo">
+            Grupo de Usuários
+        </ui:define>
+
+        <ui:define name="corpo">
+
+            <h:form id="grupo_listagem">
+                <p:messages autoUpdate="true" closable="true"  for="grupo_listagem"/>
+                <p:commandButton value="#{info.btNovoGrupoUsuario}" type="button" icon="ui-icon-plus" onclick="PF('dlg1').show();"
+                                 styleClass="btNovo"/>
+                
+                <p:dialog id="dlgUsuarios" header="Usuários" widgetVar="usr" modal="true" resizable="false" appendTo="@(body)">
+                    <h:outputText value="O grupo #{grupoController.grupo.descricao} possui o(s) seguinte(s) usuário(s): " /> 
+                    <p:dataList id="lstUsuario" value="#{grupoController.grupo.usuarios}" var="usuario"
+                                type="ordered" emptyMessage="#{info.msgListaVazia}" >                       
+                        #{usuario.nome}
+                    </p:dataList>
+                </p:dialog>   
+
+                <p:dataTable var="grupo" value="#{grupoController.lista}" emptyMessage="#{info.msgListaVazia}"
+                             widgetVar="grupoUsuarioTable" filteredValue="#{grupoController.listaFiltro}" 
+                             rows="9" paginator="true"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             paginatorPosition="top">  
+                    <p:column headerText="Usuários" style="text-align: center">
+                        <p:commandLink update=":grupo_listagem:dlgUsuarios" oncomplete="PF('usr').show();" >
+                            <p:graphicImage library="imagens" name="pesquisar.png" style="border:0" />
+                            <f:setPropertyActionListener target="#{grupoController.grupo}" value="#{grupo}" />
+                        </p:commandLink>
+                    </p:column>
+
+                    <p:column headerText="Descrição" filterBy="#{grupo.descricao}" footerText="Contém" filterMatchMode="contains">
+                        <h:outputText value="#{grupo.descricao}" />
+                    </p:column>
+                    <p:column headerText="Editar" style="text-align: center">
+                        <p:commandLink oncomplete="PF('dlg1').show();" update=":cadastro">
+                            <h:graphicImage library="imagens" name="editar.png" style="border:0" />
+                            <f:setPropertyActionListener value="#{grupo}" target="#{grupoController.grupo}" />
+                        </p:commandLink>
+                    </p:column>
+
+                    <p:column headerText="Excluir" style="text-align: center">
+                        <p:commandLink action="#{grupoController.excluirGrupo()}" update="@form">
+                            <h:graphicImage library="imagens" name="excluir.png" style="border:0" />
+                            <f:setPropertyActionListener value="#{grupo}" target="#{grupoController.grupo}" /> 
+                            <p:confirm header="Confirmação" message="Confirma a exclusão do grupo #{grupo.descricao}?" icon="ui-icon-alert" />
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable> 
+            </h:form>
+
+            <p:dialog header="#{info.dlgGrupoHeader}" widgetVar="dlg1" modal="true" closable="false" resizable="false" appendTo="@(body)">
+                <h:form id="cadastro">
+                    <p:message for="descricao" display="text" />
+                    <h:panelGrid columns="2">
+                        <p:outputLabel for="descricao" value="Descrição: " />
+                        <p:inputText id="descricao" label="Descrição: " required="true" requiredMessage="O campo Descrição é obrigatório"
+                                     size="30" value="#{grupoController.grupo.descricao}"/>
+                    </h:panelGrid>
+                    <br /><br />
+                    <p:commandButton value="Salvar" action="#{grupoController.salvarGrupo()}" 
+                                     process="@form" update="@form, :grupo_listagem" 
+                                     />
+                    <p:commandButton value="Cancelar" immediate="true"
+                                     process="@this"
+                                     action="#{grupoController.limparGrupo()}"
+                                     update="@form"
+                                     oncomplete="PF('dlg1').hide();"/>
+                </h:form>
+            </p:dialog>
+        </ui:define>
+
+    </ui:composition>
+
+</html>

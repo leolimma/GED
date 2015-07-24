@@ -1,0 +1,105 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package br.com.goku.model;
+
+/**
+ *
+ * @author Alan
+ */
+
+import java.io.Serializable;
+import javax.persistence.*;
+import java.util.List;
+import java.util.Objects;
+
+@Entity
+@Table(name="categoria")
+@NamedQuery(name="Categoria.findAll", query="select c from Categoria c")
+public class Categoria implements Serializable {    
+     
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="codigo", nullable=false, unique=true)
+    private Integer codigo;
+    
+    @ManyToOne
+    @JoinColumn(name="categoria_pai", nullable=true)
+    private Categoria pai;
+    
+    @Column(name="descricao", nullable=false)
+    private String descricao;
+    
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @JoinColumn(name="categoria_pai", updatable = false)
+    private List<Categoria> filhos;
+    
+    public Categoria(){}
+    
+    public Categoria(Categoria pai, String descricao){
+        this.pai = pai;
+        this.descricao = descricao;
+    }
+
+    public Integer getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(Integer codigo) {
+        this.codigo = codigo;
+    }
+
+    public Categoria getPai() {
+        return pai;
+    }
+
+    public void setPai(Categoria pai) {
+        this.pai = pai;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public List<Categoria> getFilhos() {
+        return filhos;
+    }
+
+    public void setFilhos(List<Categoria> filhos) {
+        this.filhos = filhos;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 61 * hash + Objects.hashCode(this.codigo);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Categoria other = (Categoria) obj;
+        if (!Objects.equals(this.codigo, other.codigo)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Categoria{" + "codigo=" + codigo + ", pai=" + pai + ", descricao=" + descricao + ", filhos=" + filhos + '}';
+    }
+    
+}

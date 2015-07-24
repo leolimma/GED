@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:sec="http://www.springframework.org/security/facelets/tags"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:composition template="/templates/interna.xhtml">
+ 
+        <ui:define name="titulo">
+            Recuperar Documentos
+        </ui:define>
+
+        <ui:define name="corpo">
+
+            <div id="metadados"> 
+                <h:form>
+                    <h:messages />
+                    <h:panelGrid columns="2">
+                        <p:outputLabel for="codigo" value="Codigo:"/>
+                        <p:inputText id="codigo" label="Codigo:" value="#{documentoController.documento.codigo}" />
+
+                        <p:outputLabel for="data_arquivo" value="Data de Arquivo:"/>
+                        <p:inputText id="data_arquivo" label="Data de Arquivo:" value="#{documentoController.documento.dataArquivo}" />
+
+                        <p:outputLabel for="tipologia" value="Tipologia:"/>
+                        <p:inputText id="tipologia" label="Tipologia:" value="#{documentoController.documento.tipologia}" />
+
+                        <p:outputLabel for="titulo" value="Título:"/>
+                        <p:inputText id="titulo" label="Título:" value="#{documentoController.documento.metadadoTitulo}" />
+
+                        <p:outputLabel for="autor" value="Autor:"/>
+                        <p:inputText id="autor" label="Autor:" value="#{documentoController.documento.metadadoAutor}" />
+
+                        <p:outputLabel for="palavra_chave" value="Palavra Chave:"/>
+                        <p:inputText id="palavra_chave" label="Palavra Chave:" value="#{documentoController.documento.metadadoPalavraChave}" />                        
+                    </h:panelGrid>
+                    <br />
+                    <p:commandButton value="Recuperar" action="#{documentoController.recuperarDocumentos()}" />
+                </h:form>
+            </div>
+
+            <div id="listagem" >
+                <h:panelGroup>
+                    <h:form id="documento_listagem">
+                        <h:messages />
+                        <p:dataTable var="documento" value="#{documentoController.lista}">
+                            <p:column headerText="Visualizar">
+                                <h:outputLink value="../arquivos/#{documento.codigo}.pdf" target="_blank">
+                                    <p:graphicImage library="imagens" name="pdf.png" />
+                                </h:outputLink>                                   
+                            </p:column>                            
+                            <p:column headerText="Título">
+                                <h:outputText value="#{documento.metadadoTitulo}" />
+                            </p:column> 
+                            <p:column headerText="Data Arquivo">
+                                <h:outputText value="#{documento.dataArquivo.time}" >
+                                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" />
+                                </h:outputText>
+                            </p:column> 
+
+                            <p:column headerText="Usuário">
+                                <h:outputText value="#{documento.usuario.nome}" />
+                            </p:column> 
+                            <p:column headerText="Tipologia">
+                                <h:outputText value="#{documento.tipologia.descricao}" />
+                            </p:column> 
+                            <p:column headerText="Autor">
+                                <h:outputText value="#{documento.metadadoAutor}" />
+                            </p:column>                                 
+                            <p:column headerText="Data">
+                                <h:outputText value="#{documento.metadadoData}" />
+                            </p:column> 
+                            <p:column headerText="Palavra Chave">
+                                <h:outputText value="#{documento.metadadoPalavraChave}" />
+                            </p:column>                                 
+                            <sec:ifAnyGranted roles="ROLE_ADMINISTRADOR">
+                                <p:column headerText="Excluir">
+                                    <p:commandLink update="@form" action="#{documentoController.excluir()}" onclick="if (!confirm('Deseja mesmo remover este documento'))
+                                                    return false">
+                                        <p:graphicImage library="imagens" name="excluir.png" />
+                                        <f:setPropertyActionListener target="#{documentoController.documento}" value="#{documento}" />
+                                    </p:commandLink>
+                                </p:column> 
+                            </sec:ifAnyGranted>
+                        </p:dataTable>
+                    </h:form>
+                </h:panelGroup>
+            </div>
+        </ui:define>        
+
+    </ui:composition>
+
+</html>

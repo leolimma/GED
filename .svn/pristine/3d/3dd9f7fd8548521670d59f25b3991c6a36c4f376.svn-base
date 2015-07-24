@@ -1,0 +1,36 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package br.com.goku.controller;
+
+import br.com.goku.model.Acesso;
+import br.com.goku.persistence.Dao;
+import br.com.goku.util.JsfUtil;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
+
+/**
+ *
+ * @author Alan
+ */
+
+@Named(value = "acessoController")
+@RequestScoped
+public class AcessoController {
+    
+    private final Dao acessoDAO;
+    private Acesso acesso = new Acesso();
+    
+    public AcessoController(){
+        this.acessoDAO = new Dao(Acesso.class);
+        this.acesso = new Acesso();
+    }
+    
+    public void salvarAcesso(){
+        acessoDAO.save(acesso);
+        acesso = new Acesso();
+        JsfUtil.addSuccessMessage("Acesso cadastrado com sucesso!");
+    }
+}

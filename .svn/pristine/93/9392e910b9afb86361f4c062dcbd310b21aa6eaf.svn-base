@@ -1,0 +1,78 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package br.com.goku.model;
+
+/**
+ *
+ * @author Alan
+ */
+
+import java.io.Serializable;
+import java.util.Objects;
+import javax.persistence.*;
+
+@Entity
+@Table(name="tipologia")
+@NamedQuery(name="Tipologia.findAll", query="select t from Tipologia t")
+public class Tipologia implements Serializable {
+    private static final long serialVersionUID = 8754228690179309536L;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="codigo", nullable=false, unique=true)
+    private Integer codigo;
+    
+    @Column(name="descricao", nullable=false, unique = true)
+    private String descricao;
+
+    public Integer getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(Integer codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 71 * hash + Objects.hashCode(this.codigo);
+        hash = 71 * hash + Objects.hashCode(this.descricao);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Tipologia other = (Tipologia) obj;
+        if (!Objects.equals(this.codigo, other.codigo)) {
+            return false;
+        }
+        if (!Objects.equals(this.descricao, other.descricao)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Tipologia{" + "codigo=" + codigo + ", descricao=" + descricao + '}';
+    }    
+    
+}

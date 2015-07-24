@@ -1,0 +1,114 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package br.com.goku.model;
+
+/**
+ *
+ * @author Alan
+ */
+
+import java.io.Serializable;
+import java.util.Objects;
+import javax.persistence.*;
+
+@Entity
+@Table(name="acesso")
+@NamedQueries({
+    @NamedQuery(name = "Acesso.findAll", query = "SELECT a FROM Acesso a")
+})
+public class Acesso implements Serializable {
+    private static final long serialVersionUID = 6374549891117101852L;
+    
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "categoria", nullable = false)
+    private Categoria categoria;
+    
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "grupo")
+    private Grupo grupo;
+    
+    private boolean leitura;
+    private boolean escrita;
+
+    public Acesso(){
+//        this.categoria = new Categoria();
+//        this.grupo = new Grupo();
+    }
+    
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    public Grupo getGrupo() {
+        return grupo;
+    }
+
+    public void setGrupo(Grupo grupo) {
+        this.grupo = grupo;
+    }
+
+    public boolean isLeitura() {
+        return leitura;
+    }
+
+    public void setLeitura(boolean leitura) {
+        this.leitura = leitura;
+    }
+
+    public boolean isEscrita() {
+        return escrita;
+    }
+
+    public void setEscrita(boolean escrita) {
+        this.escrita = escrita;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 41 * hash + Objects.hashCode(this.categoria);
+        hash = 41 * hash + Objects.hashCode(this.grupo);
+        hash = 41 * hash + (this.leitura ? 1 : 0);
+        hash = 41 * hash + (this.escrita ? 1 : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Acesso other = (Acesso) obj;
+        if (!Objects.equals(this.categoria, other.categoria)) {
+            return false;
+        }
+        if (!Objects.equals(this.grupo, other.grupo)) {
+            return false;
+        }
+        if (this.leitura != other.leitura) {
+            return false;
+        }
+        if (this.escrita != other.escrita) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Acesso{" + "categoria=" + categoria + ", usuario=" + grupo + ", leitura=" + leitura + ", escrita=" + escrita + '}';
+    }
+    
+}

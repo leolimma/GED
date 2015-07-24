@@ -1,0 +1,13 @@
+# ARQUIVO PROPERTIES PARA MENSAGENS
+##### PADR\u00c3O DE NOMES #####
+    # PREFIXO 'bt' PARA TEXTOS EM BOT\u00d5ES
+    # PREFIXO 'label' PARA TEXTOS EM LABELS
+    # PREFIXO 'msg' PARA MENSAGENS
+msgListaVazia = Nenhum registro encontrado.
+btNovo = NOVO
+btSalvar = SALVAR
+btCancelar = CANCELAR
+labelNovoAcessoGrupo = Grupo:
+labelNovoAcessoCategoria = Categoria:
+labelNovoAcessoLeitura = Leitura:
+labelNovoAcessoEscrita = Escrita:

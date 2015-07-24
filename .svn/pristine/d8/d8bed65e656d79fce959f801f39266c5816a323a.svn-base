@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/templates/interna.xhtml">
+
+        <ui:define name="titulo">
+            Meus Dados
+        </ui:define>
+
+        <ui:define name="corpo">
+            <p:messages autoUpdate="true" closable="true" />
+            <fieldset style="width: 40%;">
+                <legend>Meus Dados</legend>
+                <h:form id="frmMeusDados">
+                    <h:panelGrid columns="4">
+                        <h:outputText value="Nome: *" />
+                        <p:inputText value="#{contextoController.usuarioLogado.nome}" id="txtNome"
+                                     required="true" requiredMessage="O campo Nome é obrigatório"/>
+                        <h:outputText value="CPF: *" />
+                        <p:inputMask mask="999.999.999-99" value="#{contextoController.usuarioLogado.cpf}" 
+                                     id="txtCpf" required="true" requiredMessage="O campo CPF é obrigatório"/>
+                        <h:outputText value="Telefone: *" />
+                        <p:inputText value="#{contextoController.usuarioLogado.telefone}" id="txtTelefone" 
+                                     required="true" requiredMessage="O campo Telefone é obrigatório"/>
+                        <h:outputText value="Email: *" />
+                        <p:inputText value="#{contextoController.usuarioLogado.email}" id="txtEmail" 
+                                     required="true" requiredMessage="O campo Email é obrigatório"/>
+                        <h:outputText value="Login: *" />
+                        <p:inputText value="#{contextoController.usuarioLogado.login}" id="txtLogin" 
+                                     required="true" requiredMessage="O campo Login é obrigatório"/>
+                        <h:outputText value="Senha: " />
+                        <p:commandButton value="Trocar senha" icon="ui-icon-locked"
+                                         onclick="PF('dlgTrocaSenha').show()"/>
+                    </h:panelGrid>
+                    <p:commandButton action="#{usuarioController.editarUsuario()}" update="@form"
+                                     value="SALVAR" icon="ui-icon-disk" >
+                        <f:setPropertyActionListener value="#{contextoController.usuarioLogado}"
+                                                     target="#{usuarioController.usuario}" />
+                    </p:commandButton>
+                    <p:commandButton value="CANCELAR" icon="ui-icon-cancel" action="principal?faces-redirect=true" />
+                </h:form>
+            </fieldset>
+            <p:dialog modal="true" appendTo="@(body)" resizable="false" id="trocaSenhaDlg" 
+                      widgetVar="dlgTrocaSenha" header="Trocar senha">
+                <h:form id="frmTrocaSenha">
+                    <h:panelGrid columns="3">
+                        <h:outputText value="Senha atual: *" />
+                        <p:password value="#{usuarioController.senhaAtual}" id="txtSenhaAtual" 
+                                    required="true" requiredMessage="Este campo é obrigatório"/>
+                        <p:message display="text" for="txtSenhaAtual" />
+                        <h:outputText value="Nova senha: *" />
+                        <p:password value="#{usuarioController.novaSenha}" id="txtNovaSenha"
+                                    required="true" requiredMessage="Este campo é obrigatório"/>
+                        <p:message display="text" for="txtNovaSenha" />
+                        <h:outputText value="Confirme a nova senha: *" />
+                        <p:password value="#{usuarioController.senhaConfirm}" id="txtSenhaConfirm"
+                                    required="true" requiredMessage="Este campo é obrigatório"/>
+                        <p:message display="text" for="txtSenhaConfirm" />
+                    </h:panelGrid>
+                    <p:commandButton value="SALVAR" action="#{usuarioController.trocarSenha()}"
+                                     oncomplete="PF('dlgTrocaSenha').hide()" update="@form, :frmMeusDados">
+                        <f:setPropertyActionListener value="#{contextoController.usuarioLogado}"
+                                                     target="#{usuarioController.usuario}" />
+                    </p:commandButton>
+                    
+                </h:form>
+                
+            </p:dialog>
+        </ui:define>
+
+    </ui:composition>
+</html>
+

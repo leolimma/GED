@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:composition template="/templates/interna.xhtml">
+
+        <ui:define name="titulo">
+            Categorias
+        </ui:define>
+
+        <ui:define name="corpo">            
+            <f:view contentType="text/html">
+                <h:panelGrid columns="2" cellpadding="5">
+                    <h:panelGroup>
+                        <h:form>
+                            <p:commandButton value="#{info.btNovaCategoria}" action="#{categoriaController.novo()}" icon="ui-icon-plus" update=":edicao"
+                                             styleClass="btNovo"/>
+                        </h:form>
+                        <br />
+                        <div id="categorias" >
+                        <h:form id="arvore">
+                            <p:tree value="#{categoriaController.categoriasTree}" var="node"                                     
+                                    dynamic="false" selectionMode="single" selection="#{categoriaController.editada}">
+                                <p:ajax event="select" listener="#{categoriaController.selecionar}" update=":edicao" />
+                                    <p:treeNode>
+                                    <p:graphicImage library="imagens" name="folder.png"/>
+                                    <h:outputText value="#{node.descricao}" />
+                                </p:treeNode>
+                            </p:tree>
+                        </h:form>                        
+                        </div>
+                    </h:panelGroup>
+                        
+                    <h:panelGroup id="edicao">
+                        <h:messages />
+                        <h:form rendered="#{categoriaController.mostraEdicao}">
+                            <h:inputHidden value="#{categoriaController.editada.codigo}" />
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Pai" />
+                                <h:selectOneMenu value="#{categoriaController.editada.pai}" >
+                                    <f:selectItems value="#{categoriaController.categoriasSelect}" />                                
+                                </h:selectOneMenu>
+                                <h:outputLabel value="Descrição" />
+                                <h:inputText value="#{categoriaController.editada.descricao}" />
+                                <h:outputText />
+                                <h:panelGroup>
+                                    <p:commandButton value="Salvar" action="#{categoriaController.salvar()}"
+                                                     update=":edicao :arvore" />
+                                    <p:commandButton value="Excluir" action="#{categoriaController.excluir()}"
+                                                     update=":edicao :arvore" />
+                                </h:panelGroup>
+                                <h:outputText />
+                                <p:commandButton value="Nova subcategoria" action="#{categoriaController.novo()}"
+                                                 update=":edicao" />
+                            </h:panelGrid>
+                        </h:form>
+                    </h:panelGroup>                    
+                </h:panelGrid>
+            </f:view>            
+        </ui:define>        
+
+    </ui:composition>
+
+</html>
